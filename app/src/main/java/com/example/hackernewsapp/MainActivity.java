@@ -37,7 +37,8 @@ import java.util.concurrent.ExecutionException;
 
 public class MainActivity extends AppCompatActivity {
 
-    private RequestQueue queue;
+    // private RequestQueue queue;
+    RequestQueue queue;
 
     // async class to call api
     /*
@@ -182,7 +183,11 @@ public class MainActivity extends AppCompatActivity {
 
         // volley demo
         // making a request queue
-        queue = Volley.newRequestQueue(this);
+        // queue = Volley.newRequestQueue(this);
+
+        // Singleton design pattern suggested in the docs
+        // i.e. make only one que for entire application
+        queue = MyRequestQueue.getInstance(this.getApplicationContext()).getRequestQueue();
 
         String[] categories = {"topstories", "newstories", "beststories", "askstories",
                 "showstories", "jobstories", "updates", "user", "maxitem"};
