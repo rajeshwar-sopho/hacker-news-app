@@ -1,6 +1,8 @@
 package com.example.hackernewsapp;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -22,10 +24,13 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.concurrent.ExecutionException;
 
 public class MainActivity extends AppCompatActivity {
 
+    // async class to call api
+    /*
     public class APICaller extends AsyncTask<String, Void, String> {
         @Override
         protected String doInBackground(String... urls) {
@@ -88,11 +93,15 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+     */
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // api test
+        /*
         String resultJSON = null;
 
         APICaller wapic = new APICaller();
@@ -111,8 +120,10 @@ public class MainActivity extends AppCompatActivity {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+        */
 
 
+        // list view experimentation
         /*
         ArrayList<String> arrayList = new ArrayList<>();
         final ArrayList<Boolean> isRetracted = new ArrayList<>();
@@ -149,5 +160,11 @@ public class MainActivity extends AppCompatActivity {
         });
 
          */
+
+        // recycler view demo
+        ArrayList<String> arr = new ArrayList<>(Arrays.asList(new String[] {"Pokemon", "Death Note", "You Lie in April", "Ano Hana", "One Punch Man", "I'm a Spider, So What?"}));
+        RecyclerView recyclerView = findViewById(R.id.myRV);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setAdapter(new RVadapter(arr));
     }
 }
