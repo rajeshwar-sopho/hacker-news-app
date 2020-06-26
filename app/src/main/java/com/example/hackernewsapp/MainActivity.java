@@ -12,6 +12,14 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -28,6 +36,8 @@ import java.util.Arrays;
 import java.util.concurrent.ExecutionException;
 
 public class MainActivity extends AppCompatActivity {
+
+    private RequestQueue queue;
 
     // async class to call api
     /*
@@ -162,9 +172,56 @@ public class MainActivity extends AppCompatActivity {
          */
 
         // recycler view demo
+        /*
         ArrayList<String> arr = new ArrayList<>(Arrays.asList(new String[] {"Pokemon", "Death Note", "You Lie in April", "Ano Hana", "One Punch Man", "I'm a Spider, So What?"}));
         RecyclerView recyclerView = findViewById(R.id.myRV);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(new RVadapter(arr));
+
+         */
+
+        // volley demo
+        // making a request queue
+        queue = Volley.newRequestQueue(this);
+
+        String[] categories = {"topstories", "newstories", "beststories", "askstories",
+                "showstories", "jobstories", "updates", "user", "maxitem"};
+
+        String itemId = "23640878";
+
+        String u1 = "https://hacker-news.firebaseio.com/v0/"+ categories[5] +".json?print=pretty";
+        String u2 = "https://hacker-news.firebaseio.com/v0/item/"+ itemId +".json?print=pretty";
+
+        // making a request
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, u1,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Log.i("RESPONSE", response);
+                        Toast.makeText(MainActivity.this, "got a response", Toast.LENGTH_SHORT);
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Toast.makeText(MainActivity.this, "failed to get a response", Toast.LENGTH_SHORT);
+                    }
+                });
+
+        stringRequest.setTag(this);
+
+        queue.add(stringRequest);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+
+        // cancel all requests marked with this tag
+        // mark all requests with current activity and in onStop cancel all to ensure there are no pending requests in the queue
+        if (queue != null) {
+            Log.i("DEBUG", "cancelling all requests of this activity!");
+            queue.cancelAll(this);
+        }
     }
 }
