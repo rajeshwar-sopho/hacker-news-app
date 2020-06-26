@@ -18,6 +18,7 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
@@ -192,12 +193,13 @@ public class MainActivity extends AppCompatActivity {
         String[] categories = {"topstories", "newstories", "beststories", "askstories",
                 "showstories", "jobstories", "updates", "user", "maxitem"};
 
-        String itemId = "23640878";
+        // String itemId = "23640878";
 
-        String u1 = "https://hacker-news.firebaseio.com/v0/"+ categories[5] +".json?print=pretty";
-        String u2 = "https://hacker-news.firebaseio.com/v0/item/"+ itemId +".json?print=pretty";
+        String u1 = "https://hacker-news.firebaseio.com/v0/"+ categories[0] +".json?print=pretty";
+        // String u2 = "https://hacker-news.firebaseio.com/v0/item/"+ itemId +".json?print=pretty";
 
-        // making a request
+        // making a request StringRequest
+        /*
         StringRequest stringRequest = new StringRequest(Request.Method.GET, u1,
                 new Response.Listener<String>() {
                     @Override
@@ -216,6 +218,47 @@ public class MainActivity extends AppCompatActivity {
         stringRequest.setTag(this);
 
         queue.add(stringRequest);
+
+         */
+
+        // making a jsonArrayRequest
+        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Request.Method.GET, u1, null,
+                new Response.Listener<JSONArray>() {
+                    @Override
+                    public void onResponse(JSONArray response) {
+                        try {
+                            String itemId = Integer.toString(response.getInt(0));
+                            String u2 = "https://hacker-news.firebaseio.com/v0/item/"+ itemId +".json?print=pretty";
+
+                            Log.i("DEBUG", "requesting url=" + u2);
+
+                            StringRequest sr = new StringRequest(Request.Method.GET, u2,
+                                    new Response.Listener<String>() {
+                                        @Override
+                                        public void onResponse(String response) {
+                                            Log.i("DEBUG", "response="+response);
+                                        }
+                                    },
+                                    new Response.ErrorListener() {
+                                        @Override
+                                        public void onErrorResponse(VolleyError error) {
+                                            Toast.makeText(MainActivity.this, "Request failed", Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+                            queue.add(sr);
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Toast.makeText(MainActivity.this, "Request failed", Toast.LENGTH_SHORT).show();
+                    }
+                });
+        queue.add(jsonArrayRequest);
     }
 
     @Override
