@@ -8,6 +8,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.webkit.WebView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
@@ -21,6 +22,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.gson.Gson;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -39,7 +41,10 @@ import java.util.concurrent.ExecutionException;
 public class MainActivity extends AppCompatActivity {
 
     // private RequestQueue queue;
-    RequestQueue queue;
+    private RequestQueue queue;
+
+    // for Gson practice
+    private Gson gson = new Gson();
 
     // async class to call api
     /*
@@ -222,6 +227,7 @@ public class MainActivity extends AppCompatActivity {
          */
 
         // making a jsonArrayRequest
+        /*
         JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Request.Method.GET, u1, null,
                 new Response.Listener<JSONArray>() {
                     @Override
@@ -237,6 +243,55 @@ public class MainActivity extends AppCompatActivity {
                                         @Override
                                         public void onResponse(String response) {
                                             Log.i("DEBUG", "response="+response);
+                                        }
+                                    },
+                                    new Response.ErrorListener() {
+                                        @Override
+                                        public void onErrorResponse(VolleyError error) {
+                                            Toast.makeText(MainActivity.this, "Request failed", Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+                            queue.add(sr);
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Toast.makeText(MainActivity.this, "Request failed", Toast.LENGTH_SHORT).show();
+                    }
+                });
+        queue.add(jsonArrayRequest);
+
+         */
+
+        // making a jsonObjectRequest and testing gson library
+        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Request.Method.GET, u1, null,
+                new Response.Listener<JSONArray>() {
+                    @Override
+                    public void onResponse(JSONArray response) {
+                        try {
+                            String itemId = Integer.toString(response.getInt(0));
+                            String u2 = "https://hacker-news.firebaseio.com/v0/item/"+ itemId +".json?print=pretty";
+
+                            Log.i("DEBUG", "requesting url=" + u2);
+
+                            StringRequest sr = new StringRequest(Request.Method.GET, u2,
+                                    new Response.Listener<String>() {
+                                        @Override
+                                        public void onResponse(String response) {
+                                            Story story = gson.fromJson(response, Story.class);
+//                                            Log.i("DEBUG", "response="+response);
+//                                            Log.i("TITLE", story.getTitle());
+//                                            Log.i("URL", story.getUrl());
+//                                            Log.i("SCORE", Integer.toString(story.getScore()));
+                                            WebView webView = findViewById(R.id.postLink);
+                                            webView.getSettings().setJavaScriptEnabled(true);
+                                            webView.loadUrl(story.getUrl());
+
                                         }
                                     },
                                     new Response.ErrorListener() {
